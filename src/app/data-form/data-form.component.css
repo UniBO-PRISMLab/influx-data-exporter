@@ -1,0 +1,24 @@
+.main{
+    width: 60%;
+    margin: auto;
+}
+
+sup, .sup{
+    color: red;
+}
+
+input, select{
+    border-radius: 15px;
+}
+
+@media (max-width: 991.98px) { 
+    .main {
+        width: 100%;
+    }
+}
+
+ @media (max-width: 575.98px) { 
+    .main {
+        width: 80%;
+    }
+ }

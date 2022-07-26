@@ -1,0 +1,195 @@
+<div class="container">
+    <div class="main">
+        <form [formGroup]="form" class="row g-3 mt-5" (ngSubmit)="scarica()">
+            <div *ngIf="form.errors" class="alert alert-danger" role="alert">
+                Compilare tutti i campi obbligatori.
+            </div>
+            <div formGroupName="date" class="row mt-3">
+                <div class="col-md-6">
+                    <label for="dataInizio" class="form-label">Data inizio<sup>*</sup></label>
+                    <input formControlName="start" type="datetime-local" class="form-control" id="dataInizio" step="1">
+                    <div *ngIf="startDate?.touched && startDate?.invalid " class="alert alert-danger" role="alert">
+                        Start date is required.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="endDate" class="form-label">Data fine<sup>*</sup></label>
+                    <input formControlName="end" type="datetime-local" class="form-control" id="endDate" step="1">
+                    <div *ngIf="endDate?.touched && endDate?.invalid " class="alert alert-danger" role="alert">
+                        stop date is required.
+                    </div>
+                </div>
+            </div>
+            <hr>
+           <h4>Applica i tuoi filtri</h4>
+
+            <div class="form-check form-switch">
+                <input (change)="humidityIsChecked=!humidityIsChecked" formControlName="humidityCheckbox" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Humidity</label>
+            </div>
+
+            <div *ngIf="humidityIsChecked" formGroupName="humidity" class="row mt-3">
+                <div class="col-md-6">
+                    <label for="startHumidity" class="form-label">Start value</label>
+                    <input formControlName="start" type="text" class="form-control" id="startHumidity" step="1">
+                    <div *ngIf="startHumidity?.touched && startHumidity?.invalid " class="alert alert-danger" role="alert">
+                        Start value is required.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="stopHumidity" class="form-label">Stop value</label>
+                    <input formControlName="stop" type="text" class="form-control" id="stopHumidity" step="1">
+                    <div *ngIf="stopHumidity?.touched && stopHumidity?.invalid " class="alert alert-danger" role="alert">
+                        Stop value is required.
+                    </div>
+                </div>
+                <hr class="mt-3">
+            </div>
+            <div class="form-check form-switch">
+                <input (change)="temperatureIsChecked=!temperatureIsChecked" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Temperature</label>
+            </div>
+
+            <div *ngIf="temperatureIsChecked" formGroupName="temperature" class="row mt-3">
+                <div class="col-md-6">
+                    <label for="startTemperature" class="form-label">Start value</label>
+                    <input formControlName="start" type="text" class="form-control" id="startTemperature" step="1">
+                    <div *ngIf="startTemperature?.touched && startTemperature?.invalid " class="alert alert-danger" role="alert">
+                        Start value is required.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="stopTemperature" class="form-label">Stop value</label>
+                    <input formControlName="stop" type="text" class="form-control" id="stopTemperature" step="1">
+                    <div *ngIf="stopTemperature?.touched && stopTemperature?.invalid " class="alert alert-danger" role="alert">
+                        Stop value is required.
+                    </div>
+                </div>
+                <hr class="mt-3">
+            </div>
+
+            <div class="form-check form-switch">
+                <input (change)="resistanceIsChecked=!resistanceIsChecked" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Resistance</label>
+            </div>
+
+            <div *ngIf="resistanceIsChecked" formGroupName="resistance" class="row mt-3">
+                <div class="col-md-6">
+                    <label for="startresistance" class="form-label">Start value</label>
+                    <input formControlName="start" type="text" class="form-control" id="startresistance" step="1">
+                    <div *ngIf="startResistance?.touched && startResistance?.invalid " class="alert alert-danger" role="alert">
+                        Start value is required.
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="stopResistance" class="form-label">Stop value</label>
+                    <input formControlName="stop" type="text" class="form-control" id="stopResistance" step="1">
+                    <div *ngIf="stopResistance?.touched && stopResistance?.invalid " class="alert alert-danger" role="alert">
+                        Stop value is required.
+                    </div>
+                </div>
+                <hr class="mt-3">
+            </div>
+
+            <div class="form-check form-switch">
+                <input (change)="thingNameIsChecked=!thingNameIsChecked" class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">ThingName</label>
+            </div>
+
+            <div *ngIf="thingNameIsChecked" class="row mt-3">
+                <div class="col-12">
+                    <label for="inputState" class="form-label">Thing Name</label>
+                    <select formControlName="thingName" class="form-select" aria-label="Default select example">
+                        <option [ngValue]="null" disabled>Seleziona il sensore.</option>
+                        <option *ngFor="let thing of things" [value]="thing.name">{{thing.name}}</option>
+                    </select>
+                    <div *ngIf="thingName?.invalid && thingName?.touched" class="alert alert-danger" role="alert">
+                        Thing's name is required.
+                    </div>
+                </div>
+            </div>
+
+            <div *ngFor="let f of getKeys(sensors); let i = index" class="row mt-3">
+                <div class="form-check form-switch">
+                    <input  class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                    <label class="form-check-label" for="flexSwitchCheckDefault"> {{f}}</label>
+                </div>
+
+                <div *ngIf="!isDate(getValue(i)) && isNumber(getValue(i)) " class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="startHumidity" class="form-label">Start value</label>
+                        <input  type="text" class="form-control" id="startHumidity" >
+                        
+                    </div>
+                    <div class="col-md-6">
+                        <label for="stopHumidity" class="form-label">Stop value</label>
+                        <input  type="text" class="form-control" id="stopHumidity" >
+                        
+                    </div>
+                    <hr class="mt-3">
+                </div>
+
+                <div *ngIf="!isDate(getValue(i)) && !isNumber(getValue(i)) && isString(getValue(i)) " class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="startHumidity" class="form-label">Start value</label>
+                        <input  type="text" class="form-control" id="startHumidity">
+                        
+                    </div>
+                    <hr class="mt-3">
+                </div>
+
+                <div *ngIf="isDate(getValue(i))" class="row mt-3">
+                    <div class="col-md-6">
+                        <label for="startHumidity" class="form-label">Start value</label>
+                        <input  type="date" class="form-control" id="startHumidity" step="1">
+                        
+                    </div>
+                    
+                </div>
+
+                
+            </div>
+
+        <hr>
+        <div class="form-text"><sup>*</sup> Campi obbligatori</div>
+    
+            
+            
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary">Scarica</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+<!--
+<div class="col-md-4">
+    <label for="humidity" class="form-label">Humidity</label>
+    <input formControlName="humidity" type="text" class="form-control" id="humidity">
+    <div *ngIf="humidity?.touched && humidity?.invalid " class="alert alert-danger" role="alert">
+        Humidity is required.
+    </div>
+</div>
+
+<div class="col-md-4">
+    <label for="temperature" class="form-label">Temperature</label>
+    <input formControlName="temperature" type="text" class="form-control" id="temperature">
+    <div *ngIf="temperature?.touched && temperature?.invalid " class="alert alert-danger" role="alert">
+        Temperature is required.
+    </div>
+</div>
+
+<div class="col-md-4">
+    <label for="resistance" class="form-label">resistance</label>
+    <input formControlName="resistance" type="text" class="form-control" id="resistance">
+    <div *ngIf="resistance?.touched && resistance?.invalid " class="alert alert-danger" role="alert">
+        Resistance is required.
+    </div>
+</div>
+
+
+-->

@@ -1,0 +1,36 @@
+<navbar></navbar>
+<div class="container">
+    <form [formGroup]="form" #f="ngForm" (ngSubmit)="signIn(f.value)">
+        <div *ngIf="invalidLogin == true" class="alert alert-danger" role="alert">
+            Credenziali errate.
+        </div>
+        <h1 class="mb-5">Accedi.</h1>
+        <div class="form-floating mb-3">
+            
+            <input formControlName="org" type="text" class="form-control" id="org" placeholder="example">
+            <label for="org" class="form-label">Organization</label>
+            <div *ngIf="org?.touched && org?.invalid" class="alert alert-danger" role="alert">
+                Organization is required.
+            </div>
+        </div>
+       
+        <div class="form-floating mb-3">
+            
+            <input formControlName="username" type="text" class="form-control" id="username" placeholder="username">
+            <label for="username" class="form-label">Username </label>
+            <div *ngIf="username?.touched && username?.invalid" class="alert alert-danger" role="alert">
+                Username is required.
+            </div>
+        </div>
+        <div class="form-floating mb-4">
+            
+            <input formControlName="password" type="password" class="form-control" id="password" placeholder="password">
+            <label for="password" class="form-label">Password</label>
+            <div *ngIf="password?.touched && password?.invalid" class="alert alert-danger" role="alert">
+                Password is required.
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-lg mb-5" [disabled]="form.invalid">Accedi</button>
+    </form>
+</div>

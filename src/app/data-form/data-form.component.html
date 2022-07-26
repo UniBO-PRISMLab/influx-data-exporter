@@ -1,0 +1,173 @@
+<div class="container">
+    <div class="main">
+        
+        <form #form="ngForm" (ngSubmit)="submit(form.value)">
+            <h1 class="mt-3">Esporta i tuoi dati</h1>
+            <hr class="mb-4">
+            <div class="row">
+                <div class="form mt-3">
+                    <div class="form-floating">
+                    <select (change)="getMeasurements(bucket);oscura=true;" required ngModel name="bucket" #bucket="ngModel" class="form-select" id="bucket" aria-label="Default select example">
+                        <option ></option>
+                        <option *ngFor="let b of buckets" value="{{b.name}}">{{b.name}}</option>
+                    </select>
+                    <label for="bucket">Bucket<sup>*</sup></label>
+                    <div *ngIf="bucket?.touched && bucket?.invalid " class="alert alert-danger" role="alert">
+                        Bucket is required.
+                    </div>
+                </div>
+                </div>
+                <div class="col-md-12 mt-3">
+                    
+                    
+                    <div class="form-floating">
+                        <select (change) = "oscura=false;getThingName(bucket, measurement);getDataSchema(bucket, measurement);" required ngModel #measurement="ngModel" name="_measurement" class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                          
+                          <option *ngFor="let m of measurements" value="{{m}}">{{m}}</option>
+                        </select>
+                        <label for="floatingSelect">Measurement<sup>*</sup></label>
+                        <div *ngIf="measurement?.touched && measurement?.invalid " class="alert alert-danger" role="alert">
+                            Measurement is required.
+                        </div>
+                      </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <div class="form-floating">
+                        <input  required ngModel name="_date1" #date1="ngModel" type="datetime-local" class="form-control" id="date1" step="1">
+                        <label for="date1" class="form-label">Data inizio<sup>*</sup></label>
+                        <div *ngIf="date1?.touched && date1?.invalid " class="alert alert-danger" role="alert">
+                            Start date is required.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mt-3">
+                    <div class="form-floating">
+                        <input required ngModel name="_date2" #date2="ngModel" type="datetime-local" class="form-control" id="date2" step="1">
+                        <label for="date2" class="form-label">Data fine<sup>*</sup></label>
+                        <div *ngIf="date2?.touched && date2?.invalid " class="alert alert-danger" role="alert">
+                            Stop date is required.
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+            <div *ngIf="bucket.valid && measurement.valid && !oscura">
+                <h4 class="mt-4 mb-4">Applica i tuoi filtri</h4>
+                <div *ngFor="let f of fields; let i=index;">
+                        <div class="form-check form-switch mb-3">
+                            <input ngModel name="{{f}}_checkbox" #c class="form-check-input" type="checkbox" >
+                            <label  class="form-check-label" > {{f}} </label><sup *ngIf="f!='thingName' && c.checked">*</sup>
+                        </div>
+                        <div *ngIf="c.checked">
+                            <div *ngIf="!isDate(getValue(i)) && !isNumber(getValue(i)) && isString(getValue(i))" class="row mt-3">
+                                <div *ngIf="f!='thingName'" class="col-md-6">
+                                    <div class="form-floating">
+                                        <input class="form-control" required type="text" ngModel name="{{f}}" #field="ngModel" id="{{f}}">
+                                        <label for="{{f}}">Value</label>
+                                        <div *ngIf="field?.touched && field?.invalid " class="alert alert-danger" role="alert">
+                                                Value is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="f=='thingName'" class="col-md-12">
+                                    <div *ngFor="let thing of thingName" class="form-check form-check-inline">
+                                        <input  ngModel name="_thingName{{thing}}" class="form-check-input" type="checkbox" id="{{thing}}" value="{{thing}}">
+                                        <label class="form-check-label" for="{{thing}}">{{thing}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div *ngIf="isDate(getValue(i)) " class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input  type="date" class="form-control" required type="date" ngModel name="{{f}}" #field="ngModel" id="{{f}}" step="1">
+                                        <label for={{f}}>Date</label>
+                                        <div *ngIf="field?.touched && field?.invalid " class="alert alert-danger" role="alert">
+                                            Value is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                        <div *ngIf="isBoolean(getValue(i)) " class="row mt-3">
+                            <div>
+                            <div class="form-check form-check-inline">
+                                <input required #true ngModel class="form-check-input" type="radio" name="_true_false{{f}}" id="true" value="true">
+                                <label class="form-check-label" for="inlineRadio1">True</label>
+                              </div>
+                              <div class="form-check form-check-inline">
+                                <input #interval ngModel #false class="form-check-input" type="radio" name="_true_false{{f}}" id="false" value="false">
+                                <label class="form-check-label" for="inlineRadio2">False</label>
+                              </div>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!isDate(getValue(i)) && isNumber(getValue(i))" class="mt-3">
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input required #fixedValue ngModel  class="form-check-input" type="radio" name="radioOptions{{f}}" id="fixedValue" value="fixedValue">
+                                    <label class="form-check-label" for="inlineRadio1">Fixed value </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input required #interval ngModel  class="form-check-input" type="radio" name="radioOptions{{f}}" id="interval" value="interval">
+                                    <label class="form-check-label" for="inlineRadio2">Interval</label>
+                                </div>
+                            </div>
+                            <div *ngIf="fixedValue.checked" class="row">
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-floating">
+                                        <input class="form-control" required type="text" ngModel name="_fixed{{f}}" #field="ngModel">
+                                        <label for="fixed_{{f}}">Value</label>
+                                        <div *ngIf="field?.touched && field?.invalid " class="alert alert-danger" role="alert">
+                                                Value is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="interval.checked" class="row">
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-floating">
+                                        <input  type="text" class="form-control" required type="text" ngModel name="_start{{f}}" id="start_{{f}}" #field1="ngModel" >
+                                        <label for="start_{{f}}" class="form-label">Start value</label>
+                                        <div *ngIf="field1?.touched && field1?.invalid " class="alert alert-danger" role="alert">
+                                            Value is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-3">
+                                    <div class="form-floating">
+                                        <input  type="text" class="form-control" required type="text" ngModel name="_stop{{f}}" id="stop_{{f}}" #field2="ngModel">
+                                        <label for="stop_{{f}}" class="form-label">Stop value</label>
+                                        <div *ngIf="field2?.touched && field2?.invalid " class="alert alert-danger" role="alert">
+                                            Value is required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <hr class="mt-3">
+                    
+            </div>
+            <h4 class="mt-4 mb-3">Formato esportazione</h4>
+            <div class="form-check">
+                <input  [required]="!json.checked" #csv ngModel name="checkbox_csv" class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                  .csv 
+                </label>
+              </div>
+              <div class="form-check">
+                <input  [required]="!csv.checked" #json ngModel name="checkbox_json" class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                <label class="form-check-label" for="flexCheckChecked">
+                  .json
+                </label>
+              </div>
+            <button class="btn btn-primary mt-3" [disabled]="form.invalid">Scarica</button>
+        </div>
+        <div class="form-text mt-3">(<span class="sup">*</span>) Campi obbligatori</div>
+        <div class="mt-3">{{form.value | json}}</div>
+        </form>
+    </div>
+</div>
